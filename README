@@ -1,0 +1,4 @@
+This file is used to classify the newsgroup data found  http://people.csail.mit.edu/jrennie/20Newsgroups/
+
+After training the data with suitable number of datasets, the program can classify a new newsgroup file into one of the categories. 
+

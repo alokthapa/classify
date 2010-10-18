@@ -248,7 +248,7 @@ pathnames as well."
 (defun extract-words (text)
   (delete-duplicates
    (cl-ppcre:all-matches-as-strings "[a-zA-Z.:!-0-9]{3,}" text)
-   :test #'string=))
+(   :test #'string=))
 
 (defun extract-features (text)
   (mapcar #'intern-feature (extract-words text)))
@@ -259,10 +259,14 @@ pathnames as well."
   (increment-total-count type))
 
 (defun increment-count (feature type)
-  (incf (gethash type (cat-count feature))))
+  (if (null (gethash type (cat-count feature)))
+      (setf (gethash type (cat-count feature)) 1)
+      (setf (gethash type (cat-count feature)) (1+ (gethash type (cat-count feature))))))
 
 (defun increment-total-count (type)
-  (incf (gethash type *totals*)))
+  (if (null (gethash type *totals*))
+      (setf (gethash type *totals*) 1)
+      (setf (gethash type *totals*)  (1+  (gethash type *totals*)))))
 
 (defun clear-database ()
   (setf
@@ -285,7 +289,6 @@ pathnames as well."
 	     (mapcar #'(lambda (f)
 			 (log (type-probability f type)))
 		     features))))
-
 (defun classify-features (features)
   (let ((prob-vals '()))
     (setf prob-vals 
@@ -296,13 +299,13 @@ pathnames as well."
 	  (format t "~a" *types*)
 	  (elt *types* (search (list (reduce #'max prob-vals)) prob-vals))))
 
-
 (defun get-text (file)
 	   (let ((text ""))
 	     (with-open-file (s file)
 	       (do ((l (read-line s) (read-line s nil 'eof)))
 		   ((eq l 'eof))
-		 (setf text (concatenate 'string text  (concatenate 'string " " l) ))))
+		 (if (stringp l)
+		     (setf text (concatenate 'string text  (concatenate 'string " " l) )))))
 	     text))
 
 
@@ -316,3 +319,18 @@ pathnames as well."
 		   (list-directory dirname)))	
 
 
+
+
+;;;the directory of the newsgroups 
+(defparameter *newspath* "/Users/alokthapa/hacking/lispapp/group/20/")
+
+;;; more data = better results
+(defparameter *trainsize* 500)
+
+(create-types *newspath*)
+
+(train-from-dataset *newspath* *trainsize*)
+
+;;and then ... check if it works!
+
+;;(classify-file "/Users/alokthapa/hacking/lispapp/group/20/alt.atheism/54564")

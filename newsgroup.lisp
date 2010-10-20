@@ -19,6 +19,12 @@
   (car (last lst)))
 
 
+
+
+;;;  Attribution: Most of the utility stuff is taken from Peter Seibel's book
+;;;  Practical Common Lisp
+
+
 (defun list-directory (dirname)
   "Return a list of the contents of the directory named by dirname.
 Names of subdirectories will be returned in `directory normal
